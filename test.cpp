@@ -1,22 +1,55 @@
 #include <gtest/gtest.h>
 
-using namespace ::testing;
-
-struct TestMe : Test
+struct MyListener final : ::testing::EmptyTestEventListener
 {
-    static void TearDownTestSuite()
+    void OnTestSuiteStart(const ::testing::TestSuite &) noexcept override
     {
-        Test::TearDownTestSuite();
-        GTEST_FAIL() << "oops!";
+    }
+
+    void OnTestSuiteEnd(const ::testing::TestSuite &) override
+    {
+        GTEST_FAIL() << "ouch!";
     }
 };
 
-TEST_F(TestMe, test1)
+struct TestMe1 : ::testing::Test
+{
+};
+
+TEST_F(TestMe1, test1)
 {
     EXPECT_TRUE(true);
 }
 
-TEST_F(TestMe, test2)
+TEST_F(TestMe1, test2)
 {
     EXPECT_FALSE(false);
+}
+
+
+struct TestMe2 : ::testing::Test
+{
+    static void TearDownTestSuite()
+    {
+        ::testing::Test::TearDownTestSuite();
+        GTEST_FAIL() << "oops!";
+    }
+};
+
+TEST_F(TestMe2, test1)
+{
+    EXPECT_TRUE(true);
+}
+
+TEST_F(TestMe2, test2)
+{
+    EXPECT_FALSE(false);
+}
+
+int main(int argc, char *argv[])
+{
+    ::testing::InitGoogleTest(&argc, argv);
+    ::testing::UnitTest::GetInstance()->listeners().Append(new MyListener);
+
+    RUN_ALL_TESTS();
 }

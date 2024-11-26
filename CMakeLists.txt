@@ -16,6 +16,6 @@ include(CTest)
 include(GoogleTest)
 
 add_executable(${PROJECT_NAME} test.cpp)
-target_link_libraries(${PROJECT_NAME} PRIVATE GTest::gtest GTest::gtest_main)
+target_link_libraries(${PROJECT_NAME} PRIVATE GTest::gtest)
 
 gtest_discover_tests(${PROJECT_NAME})
